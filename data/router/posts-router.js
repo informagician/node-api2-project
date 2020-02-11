@@ -99,4 +99,25 @@ router.delete(`/:id`, (req,res) => {
     })
 })
 
+// When the client makes a PUT request to /api/posts/:id
+router.put(`/:id`,(req,res) => {
+    const {id} = req.params;
+    const msg = req.body;
+    if (!msg.title || !msg.contents) {
+        res.status(400).json({ errorMessage: "Please provide title and contents for the post." })
+    } else {
+        Posts.findById(id).then(posts => {
+            if(posts.length === 0) {
+                res.status(404).json({ message: "The post with the specified ID does not exist." })
+            } else {
+                Posts.update(id,msg).then(posts => {
+                    res.status(200).json(posts)
+                }).catch(err => {
+                    res.status(500).json({ error: "The post information could not be modified." })
+                })
+            }
+        })
+    }
+})
+
 module.exports = router;
